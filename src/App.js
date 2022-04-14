@@ -4,7 +4,9 @@ import * as fcl from "@onflow/fcl";
 import * as t from "@onflow/types";
 import {useState, useEffect} from 'react';
 
-import mintNFT from "./contracts/transactions/mint_NFT.js";
+import {create} from 'ipfs-http-client';
+import {mintNFT} from "./contracts/transactions/mint_NFT.js";
+
 
 //call ifps Hash
 const client = create('https://ipfs.infura.io:5001/api/v0');
@@ -30,36 +32,34 @@ function App() {
     fcl.authenticate();
   }
 
-  const mint = () => {
+  const mint = async () => {
 
     try{
       const added = await client.add(file);
       const hash = added.path;
-      console.log(hash);
+      const transactionId = await fcl.send([
+        fcl.transaction(mintNFT),
+        fcl.args([
+          fcl.arg(hash, t.String),
+          fcl.arg(nameOfNFT, t.String)
+        ]),
+        //boilerplate code
+        //This code is nesscessary for a transaction
+        //authz = the current user signed in
+        fcl.payer(fcl.authz),
+        fcl.proposer(fcl.authz),
+        fcl.authorizations(fcl.authz),
+        //gas limit
+        fcl.limit(9999)
+      ]).then(fcl.decode);
+
+      console.log(transactionId);
+      //return transaction
+      return fcl.tx(transactionId).onceSealed();
 
     } catch(error) {
       console.log('Error upon file uploading: ', error);
     }
-
-    const transactionId = await fcl.send([
-      fcl.transaction(mintNFT),
-      fcl.args([
-        fcl.arg(hash, t.String),
-        fcl.arg(nameOfNFT, t.String)
-      ]),
-      //boilerplate code
-      //This code is nesscessary for a transaction
-      //authz = the current user signed in
-      fcl.payer(fcl.authz),
-      fcl.proposer(fcl.authz),
-      fcl.authorizations(fcl.authz),
-      //gas limit
-      fcl.limit(9999)
-    ]).then(fcl.decode);
-
-    console.log(transactionId);
-    //return transaction
-    return fcl.tx(transactionId).onceSealed();
   }
 
   return (
