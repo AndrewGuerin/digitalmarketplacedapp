@@ -21,7 +21,7 @@ transaction {
   }
 
   execute {
-    log("A user stored a Collection inside of their account")
+    log("A user stored a Collection and a sale collection inside of their account")
   }
 }
 

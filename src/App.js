@@ -1,5 +1,7 @@
 import './App.css';
 
+import Collection from "./Collection.js";
+
 import * as fcl from "@onflow/fcl";
 import * as t from "@onflow/types";
 import {useState, useEffect} from 'react';
@@ -87,16 +89,18 @@ function App() {
     <div className="App">
         <h1>Account Address: {user && user.addr ? user.addr : ''}</h1>
         <button onClick={() => login()}>Log In Function</button>
-
         <button onClick={() => fcl.unauthenticate()}>Log Out Function</button>
-
         <button onClick={() => setupUser()}>Setup User</button>
+
 
         <div>
             <input type="text" onChange={(e) => setNameOfNFT(e.target.value)} />
             <input type="file" onChange={(e) => setFile(e.target.files[0])}/>
             <button onClick={() => mint()}>Mint</button>
         </div>
+
+        <Collection address={user.addr}></Collection>
+
     </div>
   );
 }
