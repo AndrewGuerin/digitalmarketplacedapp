@@ -28,6 +28,7 @@ function App() {
         <h1>Account Address: {user && user.addr ? user.addr : ''}</h1>
         <button onClick={() => login()}>Log In Function</button>
 
+        <button onClick={() => fcl.unauthenticate()}>Log Out Function</button>
     </div>
   );
 }
