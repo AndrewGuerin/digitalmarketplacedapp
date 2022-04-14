@@ -48,7 +48,7 @@ function App() {
         //authz = the current user signed in
         fcl.payer(fcl.authz),
         fcl.proposer(fcl.authz),
-        fcl.authorizations(fcl.authz),
+        fcl.authorizations([fcl.authz]),
         //gas limit
         fcl.limit(9999)
       ]).then(fcl.decode);
