@@ -6,6 +6,7 @@ import {useState, useEffect} from 'react';
 
 import {create} from 'ipfs-http-client';
 import {mintNFT} from "./contracts/transactions/mint_NFT.js";
+import {setupUserTx} from "./contracts/transactions/setup_user.js";
 
 
 //call ifps Hash
@@ -37,6 +38,7 @@ function App() {
     try{
       const added = await client.add(file);
       const hash = added.path;
+
       const transactionId = await fcl.send([
         fcl.transaction(mintNFT),
         fcl.args([
@@ -62,12 +64,33 @@ function App() {
     }
   }
 
+  const setupUser = async () => {
+    const transactionId = await fcl.send([
+      fcl.transaction(setupUserTx),
+      fcl.args([]),
+      //boilerplate code
+      //This code is nesscessary for a transaction
+      //authz = the current user signed in
+      fcl.payer(fcl.authz),
+      fcl.proposer(fcl.authz),
+      fcl.authorizations([fcl.authz]),
+      //gas limit
+      fcl.limit(9999)
+    ]).then(fcl.decode);
+
+        console.log(transactionId);
+        //return transaction
+        return fcl.tx(transactionId).onceSealed();
+  }
+
   return (
     <div className="App">
         <h1>Account Address: {user && user.addr ? user.addr : ''}</h1>
         <button onClick={() => login()}>Log In Function</button>
 
         <button onClick={() => fcl.unauthenticate()}>Log Out Function</button>
+
+        <button onClick={() => setupUser()}>Setup User</button>
 
         <div>
             <input type="text" onChange={(e) => setNameOfNFT(e.target.value)} />
