@@ -28,9 +28,10 @@ function Collection(props) {
   return (
     <div style={{backgroundColor: 'lightgreen'}}>
       {nfts.map(nft => (
-            <div>
+            <div key={nft.id}>
                 <h1>{nft.id}</h1>
                 <h1>{nft.ipfsHash}</h1>
+                <img style={{width: "200px"}}src={`https://ipfs.infura.io/ipfs/${nft.ipfsHash}`} />
                 <h1>{nft.metadata.name}</h1>
             </div>
       ))}

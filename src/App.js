@@ -99,7 +99,13 @@ function App() {
           <button onClick={() => mint()}>Mint</button>
         </div>
 
-        <Collection address={user.addr}></Collection>
+        { user && user.addr
+            ?
+            <Collection address={user.addr}></Collection>
+            :
+            null
+        }
+
 
     </div>
   );
