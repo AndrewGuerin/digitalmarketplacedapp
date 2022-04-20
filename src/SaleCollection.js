@@ -4,6 +4,7 @@ import * as fcl from "@onflow/fcl";
 import * as t from "@onflow/types";
 import {useState, useEffect} from 'react';
 import {getSaleNFTsScript} from "./contracts/scripts/get_sale_nfts.js"
+import {purchaseTx} from "./contracts/transactions/purchase.js"
 
 
 function SaleCollection(props) {
@@ -25,6 +26,29 @@ function SaleCollection(props) {
       setNFTs(result);
   }
 
+  const purchase = async (id) => {
+    const transactionId = await fcl.send([
+      fcl.transaction(purchaseTx),
+      fcl.args([
+        fcl.arg(props.address, t.Address),
+        fcl.arg(parseInt(id), t.UInt64)
+      ]),
+      //boilerplate code
+      //This code is nesscessary for a transaction
+      //authz = the current user signed in
+      fcl.payer(fcl.authz),
+      fcl.proposer(fcl.authz),
+      fcl.authorizations([fcl.authz]),
+      //gas limit
+      fcl.limit(9999)
+    ]).then(fcl.decode);
+
+    console.log(transactionId);
+    //return transaction
+    return fcl.tx(transactionId).onceSealed();
+  }
+
+
   return (
     <div style={{backgroundColor: 'lightblue'}}>
       {Object.keys(nfts).map(price => (
@@ -33,6 +57,7 @@ function SaleCollection(props) {
                 <h1>{nfts[price].id}</h1>
                 <img style={{width: "200px"}}src={`https://ipfs.infura.io/ipfs/${nfts[price].ipfsHash}`} />
                 <h1>{nfts[price].metadata.name}</h1>
+                <button onClick={() => purchase(nfts[price].id)}>Purchase this NFT</button>
             </div>
       ))}
     </div>

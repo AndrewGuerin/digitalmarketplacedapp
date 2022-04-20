@@ -28,6 +28,8 @@ function App() {
   const [file, setFile] = useState();
   const [id, setID] = useState();
   const [price, setPrice] = useState();
+  const [address, setAddress] = useState();
+  const [officialAddress, setOfficialAddress] = useState('');
 
   //sets the user variable to the user that just logged in
   useEffect(() => {
@@ -109,7 +111,6 @@ function App() {
     console.log(transactionId);
     //return transaction
     return fcl.tx(transactionId).onceSealed();
-
   }
 
   const unlistFromSale = async () => {
@@ -141,6 +142,10 @@ function App() {
         <button onClick={() => fcl.unauthenticate()}>Log Out Function</button>
         <button onClick={() => setupUser()}>Setup User</button>
 
+        <div>
+          <input type="text" onChange={(e) => setAddress(e.target.value)} />
+          <button onClick={() => setOfficialAddress(address)}>Search</button>
+        </div>
 
         <div>
           <input type="text" onChange={(e) => setNameOfNFT(e.target.value)} />
@@ -155,16 +160,16 @@ function App() {
           <button onClick={() => unlistFromSale()}>Unlist an NFT from sale</button>
         </div>
 
-        { user && user.addr
+        { user && user.addr && officialAddress && officialAddress !== ''
             ?
-            <Collection address={user.addr}></Collection>
+            <Collection address={officialAddress}></Collection>
             :
             null
         }
 
-        { user && user.addr
+        { user && user.addr && officialAddress && officialAddress !== ''
             ?
-            <SaleCollection address={user.addr}></SaleCollection>
+            <SaleCollection address={officialAddress}></SaleCollection>
             :
             null
         }
