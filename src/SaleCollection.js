@@ -5,6 +5,7 @@ import * as t from "@onflow/types";
 import {useState, useEffect} from 'react';
 import {getSaleNFTsScript} from "./contracts/scripts/get_sale_nfts.js"
 import {purchaseTx} from "./contracts/transactions/purchase.js"
+import { Button } from 'semantic-ui-react'
 
 
 function SaleCollection(props) {
@@ -50,14 +51,17 @@ function SaleCollection(props) {
 
 
   return (
-    <div style={{backgroundColor: 'lightblue'}}>
+    <div style={{backgroundColor: 'lightblue', border: '5px outset black', position: 'relative', width: '50%', float: 'right'}}>
       {Object.keys(nfts).map(price => (
             <div key={price}>
+              <br></br>
                 <h1>Price: {price}</h1>
-                <h1>{nfts[price].id}</h1>
+                <h1>NFT ID: {nfts[price].id}</h1>
                 <img style={{width: "200px"}}src={`https://ipfs.infura.io/ipfs/${nfts[price].ipfsHash}`} />
                 <h1>{nfts[price].metadata.name}</h1>
-                <button onClick={() => purchase(nfts[price].id)}>Purchase this NFT</button>
+                <h1>creator: {nfts[price].metadata.creator}</h1>
+                <Button onClick={() => purchase(nfts[price].id)}>Purchase this NFT</Button>
+                <br></br><br></br>
             </div>
       ))}
     </div>
