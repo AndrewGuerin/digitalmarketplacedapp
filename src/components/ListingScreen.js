@@ -193,7 +193,7 @@ function ListingScreen() {
               <br></br><br></br>
               <div>
                 <Input type="text" placeholder="eg. NFT ID" onChange={(e) => setID(e.target.value)} />
-                <Input type="text" placeholder="Set a FLOW Token Price" onChange={(e) => setPrice(e.target.value)}/>
+                <Input type="text" placeholder="Set FLOW Price eg. 20.0" onChange={(e) => setPrice(e.target.value)}/>
                 <Button onClick={() => listForSale()}>List NFT for sale</Button>
 
                 <br></br><br></br><br></br><br></br>
