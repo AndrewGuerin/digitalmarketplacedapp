@@ -1,9 +1,8 @@
 import '../index.css';
 
-import React, {useRef, useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import { useHistory } from "react-router-dom";
-import { Avatar, ChatEngine } from "react-chat-engine";
-import { auth } from "../firebase";
+
 import { Button } from 'semantic-ui-react'
 import { Input } from 'semantic-ui-react'
 
@@ -13,11 +12,12 @@ import SaleCollection from "../SaleCollection.js";
 import * as fcl from "@onflow/fcl";
 import * as t from "@onflow/types";
 
-
 import {create} from 'ipfs-http-client';
 
 import {listForSaleTx} from "../contracts/transactions/list_for_sale.js";
 import {unlistFromSaleTx} from "../contracts/transactions/unlistFromSale.js";
+
+import TransactionProgress from '../TransactionProgress';
 
 //call ifps Hash
 const client = create('https://ipfs.infura.io:5001/api/v0');
@@ -30,12 +30,17 @@ fcl.config()
 
 function ListingScreen() {
   const [user, setUser] = useState();
-  const [nameOfNFT, setNameOfNFT] = useState('');
-  const [file, setFile] = useState();
+
   const [id, setID] = useState();
+  const [unlistId, setUnlistId] = useState();
   const [price, setPrice] = useState();
-  const [address, setAddress] = useState();
+
   const [officialAddress, setOfficialAddress] = useState('');
+
+  //new progress bar
+  const [txId, setTxId] = useState();
+  const [txInProgress, setTxInProgress] = useState(false);
+  const [txStatus, setTxStatus] = useState(-1);
 
   const history = useHistory();
 
@@ -69,7 +74,14 @@ function ListingScreen() {
     history.push('/Chats')
   }
 
+  const handleMarketpageMove = async () => {
+    history.push('/UserStepGuide')
+  }
+
   const listForSale = async () => {
+    setTxInProgress(true);
+    setTxStatus(-1);
+
     const transactionId = await fcl.send([
       fcl.transaction(listForSaleTx),
       fcl.args([
@@ -86,16 +98,28 @@ function ListingScreen() {
       fcl.limit(9999)
     ]).then(fcl.decode);
 
-    console.log(transactionId);
+    //console.log(transactionId);
+
+      //progress bar
+      //everytime the state of the transaction changes this will run
+      setTxId(transactionId);
+      fcl.tx(transactionId).subscribe(res => {
+        setTxStatus(res.status);
+        console.log(res);
+      });
+
     //return transaction
     return fcl.tx(transactionId).onceSealed();
   }
 
   const unlistFromSale = async () => {
+
+    setTxInProgress(true);
+    setTxStatus(-1);
     const transactionId = await fcl.send([
       fcl.transaction(unlistFromSaleTx),
       fcl.args([
-        fcl.arg(parseInt(id), t.UInt64)
+        fcl.arg(parseInt(unlistId), t.UInt64)
       ]),
       //boilerplate code
       //This code is nesscessary for a transaction
@@ -107,7 +131,16 @@ function ListingScreen() {
       fcl.limit(9999)
     ]).then(fcl.decode);
 
-    console.log(transactionId);
+    //console.log(transactionId);
+
+      //progress bar
+      //everytime the state of the transaction changes this will run
+      setTxId(transactionId);
+      fcl.tx(transactionId).subscribe(res => {
+        setTxStatus(res.status);
+        console.log(res);
+      });
+
     //return transaction
     return fcl.tx(transactionId).onceSealed();
 
@@ -121,28 +154,32 @@ function ListingScreen() {
                     NFT Marketplace
           </div>          
 
-          <div onClick={logIn} className="connect-wallet-tab">
+          <div id="mybutton-header" onClick={logIn} className="connect-wallet-tab">
                     Connect Your Crypto Wallet
           </div>
 
-          <div onClick={Logout} className="logout-tab">
+          <div id="mybutton-header" onClick={Logout} className="logout-tab">
                     Disconnect Wallet
           </div>
 
-          <div onClick={handleMintScreenMove} className="mint-tab">
+          <div id="mybutton-header" onClick={handleMintScreenMove} className="mint-tab">
                     Mint / Create NFT's
           </div>
 
-          <div onClick={handleSearchScreenMove} className="search-tab">
+          <div id="mybutton-header" onClick={handleSearchScreenMove} className="search-tab">
                     View Account NFT's
           </div>
 
-          <div onClick={handleListingScreenMove} className="listUnlist-tab">
+          <div id="mybutton-header" onClick={handleListingScreenMove} className="listUnlist-tab">
                     List / Unlist NFT's
           </div>
 
-          <div onClick={handleChatScreenMove} className="chat-button-tab">
+          <div id="mybutton-header" onClick={handleChatScreenMove} className="chat-button-tab">
                     Back To Chatroom
+          </div>
+
+          <div id="mybutton-header" onClick={handleMarketpageMove} className="setup-tab">
+                    Setup Collection
           </div>
 
           
@@ -151,15 +188,20 @@ function ListingScreen() {
 
 
           <div className='App'>
-              <h1>Account Address: {user && user.addr ? user.addr : ''}</h1>
+              <h1>Personal Account Address: {user && user.addr ? user.addr : ''}</h1>
               
-
+              <br></br><br></br>
               <div>
-                <input type="text" onChange={(e) => setID(e.target.value)} />
-                <input type="text" onChange={(e) => setPrice(e.target.value)}/>
+                <Input type="text" placeholder="eg. NFT ID" onChange={(e) => setID(e.target.value)} />
+                <Input type="text" placeholder="Set a FLOW Token Price" onChange={(e) => setPrice(e.target.value)}/>
                 <Button onClick={() => listForSale()}>List NFT for sale</Button>
+
+                <br></br><br></br><br></br><br></br>
+                <Input type="text" placeholder="eg. NFT ID" onChange={(e) => setUnlistId(e.target.value)} />
                 <Button onClick={() => unlistFromSale()}>Unlist an NFT from sale</Button>
               </div>
+
+              <TransactionProgress txId={txId} txInProgress={txInProgress} txStatus={txStatus}/>
 
               { user && user.addr && officialAddress && officialAddress !== ''
                   ?

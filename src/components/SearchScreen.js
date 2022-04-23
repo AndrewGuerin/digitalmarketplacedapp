@@ -1,9 +1,8 @@
 import '../index.css';
 
-import React, {useRef, useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import { useHistory } from "react-router-dom";
-import { Avatar, ChatEngine } from "react-chat-engine";
-import { auth } from "../firebase";
+
 import { Button } from 'semantic-ui-react'
 import { Input } from 'semantic-ui-react'
 
@@ -17,6 +16,8 @@ import * as t from "@onflow/types";
 import {create} from 'ipfs-http-client';
 
 
+
+
 //call ifps Hash
 const client = create('https://ipfs.infura.io:5001/api/v0');
 
@@ -28,14 +29,12 @@ fcl.config()
 
 function SearchScreen() {
   const [user, setUser] = useState();
-  const [nameOfNFT, setNameOfNFT] = useState('');
-  const [file, setFile] = useState();
-  const [id, setID] = useState();
-  const [price, setPrice] = useState();
+
   const [address, setAddress] = useState();
   const [officialAddress, setOfficialAddress] = useState('');
 
   const history = useHistory();
+
 
   //sets the user variable to the user that just logged in
   useEffect(() => {
@@ -67,6 +66,10 @@ function SearchScreen() {
     history.push('/Chats')
   }
 
+  const handleMarketpageMove = async () => {
+    history.push('/UserStepGuide')
+}
+
 
 
   return (
@@ -77,43 +80,54 @@ function SearchScreen() {
                     NFT Marketplace
           </div>          
 
-          <div onClick={logIn} className="connect-wallet-tab">
+          <div id="mybutton-header" onClick={logIn} className="connect-wallet-tab">
                     Connect Your Crypto Wallet
           </div>
 
-          <div onClick={Logout} className="logout-tab">
+          <div id="mybutton-header" onClick={Logout} className="logout-tab">
                     Disconnect Wallet
           </div>
 
-          <div onClick={handleMintScreenMove} className="mint-tab">
+          <div id="mybutton-header" onClick={handleMintScreenMove} className="mint-tab">
                     Mint / Create NFT's
           </div>
 
-          <div onClick={handleSearchScreenMove} className="search-tab">
+          <div id="mybutton-header" onClick={handleSearchScreenMove} className="search-tab">
                     View Account NFT's
           </div>
 
-          <div onClick={handleListingScreenMove} className="listUnlist-tab">
+          <div id="mybutton-header" onClick={handleListingScreenMove} className="listUnlist-tab">
                     List / Unlist NFT's
           </div>
 
-          <div onClick={handleChatScreenMove} className="chat-button-tab">
+          <div id="mybutton-header" onClick={handleChatScreenMove} className="chat-button-tab">
                     Back To Chatroom
           </div>
 
-
+          <div id="mybutton-header" onClick={handleMarketpageMove} className="setup-tab">
+                    Setup Collection
+          </div>
 
 
           <div className='App'>
-            <h1>Account Address: {user && user.addr ? user.addr : ''}</h1>
-
-              <div>
-                <Input type="text" onChange={(e) => setAddress(e.target.value)} />
+            <h1>Personal Account Address: {user && user.addr ? user.addr : ''}</h1>
+            <br></br><br></br>
+              <div >
+                <Input type="text" size="large" placeholder="eg. 0x8a969f1f92cc1776" onChange={(e) => setAddress(e.target.value)} />
                 <Button onClick={() => setOfficialAddress(address)}>Search</Button>
               </div>
 
-              
+            <br></br>
+            <div id="div1-style">
+            <h1>User NFT Collection</h1>
+            </div>
+
+            <div id="div2-style">
+            <h1>NFT's For Sale</h1>
+            </div>
+               
             <div classname='displayNFT'>
+            
               { user && user.addr && officialAddress && officialAddress !== ''
                   ?
                   <Collection address={officialAddress}></Collection>

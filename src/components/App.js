@@ -8,7 +8,7 @@ import {AuthProvider} from "../contexts/AuthContext";
 import Chats from "./Chats";
 import ListingScreen from "./ListingScreen";
 import Login from "./Login";
-import MarketScreenOne from "./MarketScreenOne"
+import UserStepGuide from "./UserStepGuide"
 import NFTMint from "./NFTMint"
 import SearchScreen from "./SearchScreen";
 
@@ -20,7 +20,7 @@ function App() {
         <AuthProvider>
           <Switch>
             <Route path="/chats" component={Chats} />
-            <Route path="/MarketScreenOne" component={MarketScreenOne} />
+            <Route path="/UserStepGuide" component={UserStepGuide} />
             <Route path="/NFTMint" component={NFTMint} />
             <Route path="/SearchScreen" component={SearchScreen} />
             <Route path="/ListingScreen" component={ListingScreen} />

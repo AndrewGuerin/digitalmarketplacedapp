@@ -51,13 +51,13 @@ function SaleCollection(props) {
 
 
   return (
-    <div style={{backgroundColor: 'lightblue', border: '5px outset black', position: 'relative', width: '50%', float: 'right'}}>
+    <div style={{backgroundColor: 'lightgrey', border: '5px outset black', position: 'relative', width: '50%', float: 'right'}}>
       {Object.keys(nfts).map(price => (
             <div key={price}>
               <br></br>
-                <h1>Price: {price}</h1>
+                <h1>Price: {price} FLOW</h1>
                 <h1>NFT ID: {nfts[price].id}</h1>
-                <img style={{width: "200px"}}src={`https://ipfs.infura.io/ipfs/${nfts[price].ipfsHash}`} />
+                <img style={{width: "300px", height:"300px"}}src={`https://ipfs.infura.io/ipfs/${nfts[price].ipfsHash}`} />
                 <h1>{nfts[price].metadata.name}</h1>
                 <h1>creator: {nfts[price].metadata.creator}</h1>
                 <Button onClick={() => purchase(nfts[price].id)}>Purchase this NFT</Button>

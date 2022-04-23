@@ -19,7 +19,7 @@ const Chats = () => {
     } 
 
     const handleMarketpageMove = async () => {
-        history.push('/MarketScreenOne')
+        history.push('/UserStepGuide')
     }
 
     const getFile = async (url) => {
@@ -29,12 +29,24 @@ const Chats = () => {
         return new File([data], "userPhoto.jpg", {type: 'image/jpeg'})
     }
 
-    useEffect(() => {
-        // if(!user) {
-        //     history.push('/');
+    const handleMintScreenMove = async () => {
+        history.push('/NFTMint')
+      }
+    
+      const handleSearchScreenMove = async () => {
+        history.push('/SearchScreen')
+      }
+    
+      const handleListingScreenMove = async () => {
+        history.push('/ListingScreen')
+      }
 
-        //     return;
-        // }
+    useEffect(() => {
+        if(!user) {
+            history.push('/');
+
+            return;
+        }
 
         axios.get('https://api.chatengine.io/users/me', {
             headers: {
@@ -69,28 +81,31 @@ const Chats = () => {
     if(!user || loading) return 'loading ...';
 
     return (
-        <div classname="chats-page">
+        <div className="chats-page">
             <div className="nav-bar">
                 <div className="logo-tab">
                     NFT Marketplace Chat
                 </div>
-                <div onClick={handleLogout} className="logout-tab">
+                <div id="mybutton-header" onClick={handleLogout} className="logout-tab">
                     Logout
                 </div>
 
-                <div onClick={handleMarketpageMove} className="marketplace-tab">
-                    Click Here to get your NFT Collection started!
+                <div id="mybutton-header" onClick={handleMarketpageMove} className="marketplace-tab">
+                    New User Step Guide
+                </div>
+                <div id="mybutton-header" onClick={handleMintScreenMove} className="mint-tab">
+                    Mint / Create NFT's
+                </div>
+
+                <div id="mybutton-header" onClick={handleSearchScreenMove} className="search-tab">
+                    View Account NFT's
+                </div>
+
+                <div id="mybutton-header" onClick={handleListingScreenMove} className="listUnlist-tab">
+                    List / Unlist NFT's
                 </div>
                 
                 
-                {/* <div className="marketplace-tab">
-                    <button onClick={() => {
-                        history.push("/MarketScreenOne");
-                    }}
-                    >
-                        push
-                    </button>
-                </div> */}
             </div>
 
             <ChatEngine 

@@ -1,9 +1,8 @@
 import '../index.css';
 
-import React, {useRef, useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import { useHistory } from "react-router-dom";
-import { Avatar, ChatEngine } from "react-chat-engine";
-import { auth } from "../firebase";
+
 import { Button } from 'semantic-ui-react'
 import { Input } from 'semantic-ui-react'
 
@@ -13,9 +12,10 @@ import SaleCollection from "../SaleCollection.js";
 import * as fcl from "@onflow/fcl";
 import * as t from "@onflow/types";
 
-
 import {create} from 'ipfs-http-client';
 import {mintNFT} from "../contracts/transactions/mint_NFT.js";
+
+import TransactionProgress from '../TransactionProgress';
 
 
 //call ifps Hash
@@ -32,10 +32,13 @@ function NFTMint() {
   const [creatorOfNFT, setCreatorOfNFT] = useState('');
   const [nameOfNFT, setNameOfNFT] = useState('');
   const [file, setFile] = useState();
-  const [id, setID] = useState();
-  const [price, setPrice] = useState();
-  const [address, setAddress] = useState();
+
   const [officialAddress, setOfficialAddress] = useState('');
+
+  //new progress bar
+  const [txId, setTxId] = useState();
+  const [txInProgress, setTxInProgress] = useState(false);
+  const [txStatus, setTxStatus] = useState(-1);
 
   const history = useHistory();
 
@@ -62,14 +65,22 @@ function NFTMint() {
   }
 
   const handleListingScreenMove = async () => {
-    history.push('/SearchScreen')
+    history.push('/ListingScreen')
   }
 
   const handleChatScreenMove = async () => {
     history.push('/Chats')
   }
 
+  const handleMarketpageMove = async () => {
+    history.push('/UserStepGuide')
+}
+
   const mint = async () => {
+    //Progress code
+    setTxInProgress(true);
+    setTxStatus(-1);
+
 
     try{
       const added = await client.add(file);
@@ -92,7 +103,15 @@ function NFTMint() {
         fcl.limit(9999)
       ]).then(fcl.decode);
 
-      console.log(transactionId);
+      //console.log(transactionId);
+
+      //progress bar
+      //everytime the state of the transaction changes this will run
+      setTxId(transactionId);
+      fcl.tx(transactionId).subscribe(res => {
+        setTxStatus(res.status);
+        console.log(res);
+      });
       //return transaction
       return fcl.tx(transactionId).onceSealed();
 
@@ -106,46 +125,52 @@ function NFTMint() {
 
 <div className="nav-bar">
           <div className="logo-tab">
-                    NFT Marketplace,   Mint and List your NFT's for sale
+                    NFT Marketplace
           </div>          
 
-          <div onClick={logIn} className="connect-wallet-tab">
+          <div id="mybutton-header" onClick={logIn} className="connect-wallet-tab">
                     Connect Your Crypto Wallet
           </div>
 
-          <div onClick={Logout} className="logout-tab">
+          <div id="mybutton-header" onClick={Logout} className="logout-tab">
                     Disconnect Wallet
           </div>
 
-          <div onClick={handleMintScreenMove} className="mint-tab">
+          <div id="mybutton-header" onClick={handleMintScreenMove} className="mint-tab">
                     Mint / Create NFT's
           </div>
 
-          <div onClick={handleSearchScreenMove} className="search-tab">
+          <div id="mybutton-header" onClick={handleSearchScreenMove} className="search-tab">
                     View Account NFT's
           </div>
 
-          <div onClick={handleListingScreenMove} className="listUnlist-tab">
+          <div id="mybutton-header" onClick={handleListingScreenMove} className="listUnlist-tab">
                     List / Unlist NFT's
           </div>
 
-          <div onClick={handleChatScreenMove} className="chat-button-tab">
+          <div id="mybutton-header" onClick={handleChatScreenMove} className="chat-button-tab">
                     Back To Chatroom
+          </div>
+
+          <div id="mybutton-header" onClick={handleMarketpageMove} className="setup-tab">
+                    Setup Collection
           </div>
 
 
 
 
           <div className='App'>
-              <h1>Account Address: {user && user.addr ? user.addr : ''}</h1>
+              <h1>Personal Account Address: {user && user.addr ? user.addr : ''}</h1>
               
-
+              <br></br><br></br>
               <div>
-                <Input type="text" onChange={(e) => setCreatorOfNFT(e.target.value)} />
-                <Input type="text" onChange={(e) => setNameOfNFT(e.target.value)} />
+                <Input type="text" placeholder="Creator username" onChange={(e) => setCreatorOfNFT(e.target.value)} />
+                <Input type="text" placeholder="NFT name" onChange={(e) => setNameOfNFT(e.target.value)} /><br></br><br></br>
                 <Input type="file" onChange={(e) => setFile(e.target.files[0])}/>
-                <Button onClick={() => mint()}>Mint</Button>
+                <Button onClick={() => mint()}>Start minting</Button>
               </div>
+
+              <TransactionProgress txId={txId} txInProgress={txInProgress} txStatus={txStatus}/>
 
             
 
