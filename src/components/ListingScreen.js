@@ -222,5 +222,4 @@ function ListingScreen() {
     </div>
   );
 }
-
 export default ListingScreen;

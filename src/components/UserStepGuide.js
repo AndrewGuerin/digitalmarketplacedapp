@@ -157,5 +157,4 @@ function UserStepGuide() {
     </div>
   );
 }
-
 export default UserStepGuide;

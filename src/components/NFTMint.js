@@ -193,5 +193,4 @@ function NFTMint() {
     </div>
   );
 }
-
 export default NFTMint;

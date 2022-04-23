@@ -147,5 +147,4 @@ function SearchScreen() {
     </div>
   );
 }
-
 export default SearchScreen;
