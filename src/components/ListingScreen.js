@@ -204,7 +204,7 @@ function ListingScreen() {
                 <Button onClick={() => unlistNFTFromSale()}>Unlist an NFT from sale</Button>
               </div>
 
-              <TransactionProgressBar transactionID={transactionID} transactionInProgress={transactionInProgress} transactionStatus={transactionStatus}/>
+              <TransactionProgressBar transId={transactionID} transInProgress={transactionInProgress} transStatus={transactionStatus}/>
 
               { user && user.addr && currentUserAddress && currentUserAddress !== ''
                   ? <MYNFTCollection address={currentUserAddress}></MYNFTCollection>

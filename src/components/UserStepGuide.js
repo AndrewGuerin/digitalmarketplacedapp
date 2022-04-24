@@ -147,7 +147,7 @@ function UserStepGuide() {
                 
                 <Button onClick={() => setupUser()}>Setup User Collection</Button>
                 <br></br><br></br>
-                <TransactionProgressBar txId={transactionID} txInProgress={transactionInProgress} txStatus={transactionStatus}/>
+                <TransactionProgressBar transId={transactionID} transInProgress={transactionInProgress} transStatus={transactionStatus}/>
               </div>
             </div>
               { user && user.addr && currentUserAddress && currentUserAddress !== ''
