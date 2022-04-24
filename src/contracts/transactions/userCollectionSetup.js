@@ -1,4 +1,4 @@
-export const setupUserTx = `
+export const userCollectionSetupTrans = `
 import MyNFT from 0x48d98a1c02880291
 import NonFungibleToken from 0x631e88ae7f1d7c20
 import NFTMarketplace from 0x48d98a1c02880291
@@ -14,14 +14,13 @@ transaction {
     acct.link<&MyNFT.Collection>(/private/MyNFTCollection, target: /storage/MyNFTCollection)
 
     let MyNFTCollection = acct.getCapability<&MyNFT.Collection>(/private/MyNFTCollection)
-        let FlowTokenVault = acct.getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver)
-
-        acct.save(<- NFTMarketplace.createSaleCollection(MyNFTCollection: MyNFTCollection, FlowTokenVault: FlowTokenVault), to: /storage/MySaleCollection)
-        acct.link<&NFTMarketplace.SaleCollection{NFTMarketplace.SaleCollectionPublic}>(/public/MySaleCollection, target: /storage/MySaleCollection)
+      let FlowTokenVault = acct.getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver)
+      acct.save(<- NFTMarketplace.createSaleCollection(MyNFTCollection: MyNFTCollection, FlowTokenVault: FlowTokenVault), to: /storage/MySaleCollection)
+      acct.link<&NFTMarketplace.SaleCollection{NFTMarketplace.SaleCollectionPublic}>(/public/MySaleCollection, target: /storage/MySaleCollection)
   }
 
   execute {
-    log("A user stored a Collection and a sale collection inside of their account")
+    log("A user stored a  regular Collection and a sale collection inside of their account")
   }
 }
 

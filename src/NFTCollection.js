@@ -1,23 +1,25 @@
 import './index.css';
 
+import {useState, useEffect} from 'react';
+import {returnNFTScript} from "./contracts/scripts/returnNFT.js";
 import * as fcl from "@onflow/fcl";
 import * as t from "@onflow/types";
-import {useState, useEffect} from 'react';
-import {getNFTsScript} from "./contracts/scripts/get_nfts.js"
 
 
-function Collection(props) {
+
+function MYNFTCollection(found) {
   const [nfts, setNFTs] = useState([]);
 
   useEffect(() => {
-    getUserNFTs();
+    getUserAddressNFTs();
   }, [])
 
-  const getUserNFTs = async () => {
+  const getUserAddressNFTs = async () => {
       const result = await fcl.send([
-          fcl.script(getNFTsScript),
+          fcl.script(returnNFTScript),
           fcl.args([
-              fcl.arg(props.address, t.Address)
+            //required function props.address
+              fcl.arg(found.address, t.Address)
           ])
       ]).then(fcl.decode);
 
@@ -41,4 +43,4 @@ function Collection(props) {
   );
 }
 
-export default Collection;
+export default MYNFTCollection;

@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import { Button } from 'semantic-ui-react'
 import { Input } from 'semantic-ui-react'
 
-import Collection from "../Collection.js";
+import MYNFTCollection from "../NFTCollection.js";
 import SaleCollection from "../SaleCollection.js";
 
 import * as fcl from "@onflow/fcl";
@@ -14,10 +14,10 @@ import * as t from "@onflow/types";
 
 import {create} from 'ipfs-http-client';
 
-import {listForSaleTx} from "../contracts/transactions/list_for_sale.js";
-import {unlistFromSaleTx} from "../contracts/transactions/unlistFromSale.js";
+import {listNFT4SaleTrans} from "../contracts/transactions/listNFT4Sale.js";
+import {unlistFromSaleTransaction} from "../contracts/transactions/unlistFromSale.js";
 
-import TransactionProgress from '../TransactionProgress';
+import TransactionProgressBar from '../TransactionProgressBar';
 
 //call ifps Hash
 const client = create('https://ipfs.infura.io:5001/api/v0');
@@ -31,16 +31,19 @@ fcl.config()
 function ListingScreen() {
   const [user, setUser] = useState();
 
-  const [id, setID] = useState();
+  //NFT details
   const [unlistId, setUnlistId] = useState();
   const [price, setPrice] = useState();
+  const [thisNFTId, setThisNFTID] = useState();
 
-  const [officialAddress, setOfficialAddress] = useState('');
+
+  //Address of the current user
+  const [currentUserAddress, setCurrentUserAddress] = useState('');
 
   //new progress bar
-  const [txId, setTxId] = useState();
-  const [txInProgress, setTxInProgress] = useState(false);
-  const [txStatus, setTxStatus] = useState(-1);
+  const [transactionInProgress, setTransactionInProgress] = useState(false);
+  const [transactionID, setTransactionID] = useState();
+  const [transactionStatus, setTransactionStatus] = useState(-1);
 
   const history = useHistory();
 
@@ -54,10 +57,12 @@ function ListingScreen() {
     fcl.authenticate();
   }
 
+  //logout from blocto wallet
   const Logout = () => {
     fcl.unauthenticate();
   }
 
+  //moving screens
   const handleMintScreenMove = async () => {
     history.push('/NFTMint')
   }
@@ -78,14 +83,16 @@ function ListingScreen() {
     history.push('/UserStepGuide')
   }
 
-  const listForSale = async () => {
-    setTxInProgress(true);
-    setTxStatus(-1);
+  const listNFTForSale = async () => {
 
-    const transactionId = await fcl.send([
-      fcl.transaction(listForSaleTx),
+    setTransactionInProgress(true);
+    setTransactionStatus(-1);
+
+    const transId = await fcl.send([
+
+      fcl.transaction(listNFT4SaleTrans),
       fcl.args([
-        fcl.arg(parseInt(id), t.UInt64),
+        fcl.arg(parseInt(thisNFTId), t.UInt64),
         fcl.arg(price, t.UFix64)
       ]),
       //boilerplate code
@@ -95,29 +102,30 @@ function ListingScreen() {
       fcl.proposer(fcl.authz),
       fcl.authorizations([fcl.authz]),
       //gas limit
-      fcl.limit(9999)
+      fcl.limit(999)
     ]).then(fcl.decode);
 
     //console.log(transactionId);
 
       //progress bar
       //everytime the state of the transaction changes this will run
-      setTxId(transactionId);
-      fcl.tx(transactionId).subscribe(res => {
-        setTxStatus(res.status);
-        console.log(res);
+      setTransactionID(transId);
+
+      fcl.tx(transId).subscribe(result => {
+        setTransactionStatus(result.status);
+        console.log(result);
       });
 
     //return transaction
-    return fcl.tx(transactionId).onceSealed();
+    return fcl.tx(transId).onceSealed();
   }
 
-  const unlistFromSale = async () => {
+  const unlistNFTFromSale = async () => {
 
-    setTxInProgress(true);
-    setTxStatus(-1);
-    const transactionId = await fcl.send([
-      fcl.transaction(unlistFromSaleTx),
+    setTransactionInProgress(true);
+    setTransactionStatus(-1);
+    const transId = await fcl.send([
+      fcl.transaction(unlistFromSaleTransaction),
       fcl.args([
         fcl.arg(parseInt(unlistId), t.UInt64)
       ]),
@@ -128,21 +136,19 @@ function ListingScreen() {
       fcl.proposer(fcl.authz),
       fcl.authorizations([fcl.authz]),
       //gas limit
-      fcl.limit(9999)
+      fcl.limit(999)
     ]).then(fcl.decode);
-
-    //console.log(transactionId);
 
       //progress bar
       //everytime the state of the transaction changes this will run
-      setTxId(transactionId);
-      fcl.tx(transactionId).subscribe(res => {
-        setTxStatus(res.status);
+      setTransactionID(transId);
+      fcl.tx(transId).subscribe(res => {
+        setTransactionStatus(res.status);
         console.log(res);
       });
 
     //return transaction
-    return fcl.tx(transactionId).onceSealed();
+    return fcl.tx(transId).onceSealed();
 
   }
 
@@ -182,39 +188,32 @@ function ListingScreen() {
                     Setup Collection
           </div>
 
-          
-
-
-
-
           <div className='App'>
               <h1>Personal Account Address: {user && user.addr ? user.addr : ''}</h1>
               
               <br></br><br></br>
               <div>
-                <Input type="text" placeholder="eg. NFT ID" onChange={(e) => setID(e.target.value)} />
+                <Input type="text" placeholder="eg. NFT ID" onChange={(e) => setThisNFTID(e.target.value)} />
                 <Input type="text" placeholder="Set FLOW Price eg. 20.0" onChange={(e) => setPrice(e.target.value)}/>
-                <Button onClick={() => listForSale()}>List NFT for sale</Button>
+
+                <Button onClick={() => listNFTForSale()}>List NFT for sale</Button>
 
                 <br></br><br></br><br></br><br></br>
                 <Input type="text" placeholder="eg. NFT ID" onChange={(e) => setUnlistId(e.target.value)} />
-                <Button onClick={() => unlistFromSale()}>Unlist an NFT from sale</Button>
+
+                <Button onClick={() => unlistNFTFromSale()}>Unlist an NFT from sale</Button>
               </div>
 
-              <TransactionProgress txId={txId} txInProgress={txInProgress} txStatus={txStatus}/>
+              <TransactionProgressBar txId={transactionID} txInProgress={transactionInProgress} txStatus={transactionStatus}/>
 
-              { user && user.addr && officialAddress && officialAddress !== ''
-                  ?
-                  <Collection address={officialAddress}></Collection>
-                  :
-                  null
+              { user && user.addr && currentUserAddress && currentUserAddress !== ''
+                  ? <MYNFTCollection address={currentUserAddress}></MYNFTCollection>
+                  : null
               }
 
-              { user && user.addr && officialAddress && officialAddress !== ''
-                  ?
-                  <SaleCollection address={officialAddress}></SaleCollection>
-                  :
-                  null
+              { user && user.addr && currentUserAddress && currentUserAddress !== ''
+                  ? <SaleCollection address={currentUserAddress}></SaleCollection>
+                  : null
               }
           </div>
       </div>  

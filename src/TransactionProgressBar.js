@@ -1,70 +1,68 @@
-function TransactionProgress({txId, txInProgress, txStatus}) {
-    if(txInProgress) {
-        return (
-            <article>
-                {txStatus < 0
+function TransactionProgressBar({transId, transInProgress, transStatus}) {
+    if(transInProgress) {
+        return ( <article>{transStatus < 0
                 ?
                 <div>
                   <span>
                       Transaction Status: <kbd>Initializing</kbd>
                       <br />
-                      <small>Waiting for transaction approval.</small>
+                      <large>Waiting for transaction approval.</large>
                   </span> 
                   <progress indeterminate="true">Initializing</progress>
                 </div>
-                : txStatus < 2
+                : transStatus < 2
                 ? 
                 <div>
                   <span>
                       Transaction Status:
-                        <span className="txId">
-                          <a href={`https://testnet.flowscan.org/transaction/${txId}`} target="_blank">{txId}</a>
+                        <span className="progressBar">
+                          <a href={`https://testnet.flowscan.org/transaction/${transId}`} target="_blank">{transId}</a>
                         </span>
-                      <kbd>Pending</kbd>
+                      <kbd>Transaction Pending</kbd>
                       <br />
-                      <small>This transaction is currently pending.</small>
+                      <large>This transaction is currently pending.</large>
                   </span> 
                   <progress indeterminate="true">Awaiting Finalization</progress>
                 </div>
-                : txStatus === 2
+                : transStatus === 2
                 ?
                 <div>
                   <span>
                       Transaction Status:
-                        <span className="txId">
-                          <a href={`https://testnet.flowscan.org/transaction/${txId}`} target="_blank">{txId}</a>
+                        <span className="progressBar">
+                          <a href={`https://testnet.flowscan.org/transaction/${transId}`} target="_blank">{transId}</a>
                         </span>
                       <kbd>Finalised</kbd>
                       <br />
-                      <small>This transaction is currently executing.</small>
+                      <large>This transaction is currently executing.</large>
                   </span> 
                   <progress min="0" max="100" value="60">Executing</progress>
                 </div>
-                : txStatus === 3
+                : transStatus === 3
                 ?
                 <div>
                   <span>
                       Transaction Status:
-                        <span className="txId">
-                          <a href={`https://testnet.flowscan.org/transaction/${txId}`} target="_blank">{txId}</a>
+                        <span className="progressBar">
+                          <a href={`https://testnet.flowscan.org/transaction/${transId}`} target="_blank">{transId}</a>
                         </span>
                       <kbd>Executed</kbd>
                       <br />
-                      <small>This transaction is currently sealing.</small>
+                      <large>This transaction is currently sealing.</large>
                   </span> 
                   <progress min="0" max="100" value="80">Sealing</progress>
                 </div>
-                : txStatus === 4 
+                : transStatus === 4 
                 ?
                 <div>
                   <span>
                       Transaction Status:
-                        <span className="txId">
-                          <a href={`https://testnet.flowscan.org/transaction/${txId}`} target="_blank">{txId}</a>
+                        <span className="progressBar">
+                          <a href={`https://testnet.flowscan.org/transaction/${transId}`} target="_blank">{transId}</a>
                         </span>
                       <kbd>Sealed</kbd>
                       <br />
-                      <small>This transaction is currently sealing.</small>
+                      <small>Transaction has been SEALED and commited to the blockchain.</small>
                   </span> 
                   <progress min="0" max="100" value="100">Transaction has been SEALED and commited to the blockchain</progress>
                 </div>
@@ -76,4 +74,4 @@ function TransactionProgress({txId, txInProgress, txStatus}) {
     }
 }
 
-export default TransactionProgress;
+export default TransactionProgressBar;

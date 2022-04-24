@@ -6,16 +6,12 @@ import { useHistory } from "react-router-dom";
 import { Button } from 'semantic-ui-react'
 import { Input } from 'semantic-ui-react'
 
-import Collection from "../Collection.js";
+import MYNFTCollection from "../NFTCollection.js";
 import SaleCollection from "../SaleCollection.js";
 
 import * as fcl from "@onflow/fcl";
-import * as t from "@onflow/types";
-
 
 import {create} from 'ipfs-http-client';
-
-
 
 
 //call ifps Hash
@@ -28,10 +24,9 @@ fcl.config()
     .put("discovery.wallet", "https://fcl-discovery.onflow.org/testnet/authn")
 
 function SearchScreen() {
+  const [searchAddress, setSearchAddress] = useState();
+  const [currentUserAddress, setOfficialAddress] = useState('');
   const [user, setUser] = useState();
-
-  const [address, setAddress] = useState();
-  const [officialAddress, setOfficialAddress] = useState('');
 
   const history = useHistory();
 
@@ -69,7 +64,6 @@ function SearchScreen() {
   const handleMarketpageMove = async () => {
     history.push('/UserStepGuide')
 }
-
 
 
   return (
@@ -113,8 +107,8 @@ function SearchScreen() {
             <h1>Personal Account Address: {user && user.addr ? user.addr : ''}</h1>
             <br></br><br></br>
               <div >
-                <Input type="text" size="large" placeholder="eg. 0x8a969f1f92cc1776" onChange={(e) => setAddress(e.target.value)} />
-                <Button onClick={() => setOfficialAddress(address)}>Search</Button>
+                <Input type="text" size="large" placeholder="eg. 0x8a969f1f92cc1776" onChange={(e) => setSearchAddress(e.target.value)} />
+                <Button onClick={() => setOfficialAddress(searchAddress)}>Search</Button>
               </div>
 
             <br></br>
@@ -127,19 +121,14 @@ function SearchScreen() {
             </div>
                
             <div classname='displayNFT'>
-            
-              { user && user.addr && officialAddress && officialAddress !== ''
-                  ?
-                  <Collection address={officialAddress}></Collection>
-                  :
-                  null
+              { user && user.addr && currentUserAddress && currentUserAddress !== ''
+                  ? <MYNFTCollection address={currentUserAddress}></MYNFTCollection>
+                  : null
               }
             </div>
-              { user && user.addr && officialAddress && officialAddress !== ''
-                  ?
-                  <SaleCollection address={officialAddress}></SaleCollection>
-                  :
-                  null
+              { user && user.addr && currentUserAddress && currentUserAddress !== ''
+                  ? <SaleCollection address={currentUserAddress}></SaleCollection>
+                  : null
               }
           </div>
       </div>  

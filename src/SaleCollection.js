@@ -3,36 +3,41 @@ import './App.css';
 import * as fcl from "@onflow/fcl";
 import * as t from "@onflow/types";
 import {useState, useEffect} from 'react';
-import {getSaleNFTsScript} from "./contracts/scripts/get_sale_nfts.js"
-import {purchaseTx} from "./contracts/transactions/purchase.js"
+import {returnNFT4Sale} from "./contracts/scripts/returnNFT4Sale.js"
+import {purchaseTransact} from "./contracts/transactions/purchaseNFT.js"
 import { Button } from 'semantic-ui-react'
 
 
+
+
 function SaleCollection(props) {
+  //new progress bar
+
+
   const [nfts, setNFTs] = useState([]);
 
   useEffect(() => {
-    getUserSaleNFTs();
+    getAddressSaleCollection();
   }, [])
 
-  const getUserSaleNFTs = async () => {
-      const result = await fcl.send([
-          fcl.script(getSaleNFTsScript),
+  const getAddressSaleCollection = async () => {
+      const solution = await fcl.send([
+          fcl.script(returnNFT4Sale),
           fcl.args([
               fcl.arg(props.address, t.Address)
           ])
       ]).then(fcl.decode);
 
-      console.log(result);
-      setNFTs(result);
+      console.log(solution);
+      setNFTs(solution);
   }
 
-  const purchase = async (id) => {
+  const purchase = async (nftID) => {
     const transactionId = await fcl.send([
-      fcl.transaction(purchaseTx),
+      fcl.transaction(purchaseTransact),
       fcl.args([
         fcl.arg(props.address, t.Address),
-        fcl.arg(parseInt(id), t.UInt64)
+        fcl.arg(parseInt(nftID), t.UInt64)
       ]),
       //boilerplate code
       //This code is nesscessary for a transaction
@@ -60,8 +65,12 @@ function SaleCollection(props) {
                 <img style={{width: "300px", height:"300px"}}src={`https://ipfs.infura.io/ipfs/${nfts[price].ipfsHash}`} />
                 <h1>{nfts[price].metadata.name}</h1>
                 <h1>creator: {nfts[price].metadata.creator}</h1>
+                
                 <Button onClick={() => purchase(nfts[price].id)}>Purchase this NFT</Button>
+                
                 <br></br><br></br>
+                
+                
             </div>
       ))}
     </div>

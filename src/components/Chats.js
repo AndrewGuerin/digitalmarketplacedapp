@@ -1,9 +1,9 @@
-import React, {useRef, useState, useEffect} from "react";
-import { useHistory } from "react-router-dom";
-import { Avatar, ChatEngine } from "react-chat-engine";
-import { auth } from "../firebase";
+import React, {useState, useEffect} from "react";
+import {useHistory} from "react-router-dom";
+import {ChatEngine} from "react-chat-engine";
+import {auth} from "../firebase";
 
-import { useAuth } from "../contexts/AuthContext";
+import {useAuth} from "../contexts/AuthContext";
 import axios from "axios";
 
 
@@ -109,10 +109,11 @@ const Chats = () => {
             </div>
 
             <ChatEngine 
-                heigth="calc(100vh - 66px)"
-                projectID="b6399b9a-6d00-470a-8eff-2263ba836a01"
                 userName={user.email}
                 userSecret={user.uid}
+                heigth="calc(200vh - 66px)"
+                projectID="b6399b9a-6d00-470a-8eff-2263ba836a01"
+                
             />
 
         </div>

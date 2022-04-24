@@ -11,7 +11,7 @@ transaction(ipfsHash: String, name: String, creator: String) {
     collection.deposit(token: <- nft)
   }
   execute {
-    log("A user minted an NFT into their account")
+    log("A user minted an NFT into their personal nft collection account")
   }
 }
 `
